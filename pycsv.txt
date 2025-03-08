@@ -1,0 +1,29 @@
+# Read data from Arduino Uno connected with the USB cable (emulated serial port)
+import serial
+import time
+ 
+#open file
+try:
+    f = open('sensor_data.csv', 'w+')
+    f.write('Date,Time,Sensor values\r\n')
+    f.close()
+except:
+    pass
+ 
+if __name__ == '__main__':
+    ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+    ser.reset_input_buffer()
+try:
+    while True:
+        f = open('sensor_data.csv', 'a+')
+        if ser.in_waiting > 0:
+            line = ser.readline().decode('utf-8').rstrip()
+            print("{0} {1}".format(time.strftime('%d/%m/%y %H:%M:%S'),line))
+                        #write to file
+                        f.write('{0},{1},{2} \r\n'.format(time.strftime('%d/%m/%y'), time.strftime('%H:%M:%S'),line))
+        f.close()
+# exit with control-c to save file
+except KeyboardInterrupt:
+    print('Loop interrupted')
+f.close()
+exit()
